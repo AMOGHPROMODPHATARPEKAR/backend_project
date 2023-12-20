@@ -4,6 +4,7 @@ import { User } from "../models/user.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/Apiresponse.js";
 import jwt from 'jsonwebtoken'
+import { json } from "express";
 
 //method for generating access and refresh token
 
@@ -115,6 +116,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(404, "User not found")
     }
+    console.log("user : ",user)
     //password check
     const isPasswordValid = await user.isPasswordCorrect(password)
 
@@ -161,17 +163,17 @@ const logoutUser = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true
     }
-
+   const name = req.user?.username
     return res.status(200)
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "user Logged out Successfully"))
+        .json(new ApiResponse(200, {}, `${name} logged out` ))
 })
 
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshtoken = req.cookies.refreshToken || req.body.refreshToken
-
+console.log("inc token ",incomingRefreshtoken)
     if (!incomingRefreshtoken) {
         throw new ApiError(401, "Unauthorized request")
     }
@@ -181,7 +183,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         const decodedToken = jwt.verify(incomingRefreshtoken, process.env.REFRESH_TOKEN_SECRET)
 
         const user = await User.findById(decodedToken?._id)
-
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
         }
@@ -239,33 +240,38 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
 const getCurrentUser = asyncHandler(async(req,res)=>{
     return res.status(200)
-    .json(200,req.user,"current user fetched successfully")
+    .json(
+      new ApiResponse(200,req.user,"current user fetched successfully")  
+        )
 })
 
 const updateAccountDetails = asyncHandler(async(req,res)=>{
 
-    const {fullname,email} = req.body
+    const {fullName,Email} = req.body
 
-    if(!fullname || !email)
+    if(!fullName || !Email)
     {
         throw new ApiError(400,"All field are required")
     }
 
-    const user = User.findByIdAndUpdate(
-        req.user?.id,
+    const user = User.findById(
+        req.user?._id,
         {
        $set:{
-        fullname,
-        email
+       fullname:fullName,
+        email:Email,
        }
         },
         {
-            new:true
-        }).select("-password")
-
+            new:true,
+        })
+if(!user)
+{
+    throw new ApiError(500,"Server unable to fetch")
+}
         return res.status(200)
         .json(
-            new ApiResponse(200,user,"Account details updated")
+            new ApiResponse(200,req.user,"Account details updated")
         )
 
 })
@@ -345,5 +351,6 @@ export { logoutUser }
 export { refreshAccessToken }
 export {changeCurrentPassword}
 export{getCurrentUser}
+export {updateAccountDetails}
 export {updateUserAvatar}
 export {updateUserCoverImage}
