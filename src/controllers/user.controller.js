@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.models.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/Apiresponse.js";
 import jwt from 'jsonwebtoken'
 import { json } from "express";
@@ -240,6 +240,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 })
 
 const getCurrentUser = asyncHandler(async(req,res)=>{
+
     return res.status(200)
     .json(
       new ApiResponse(200,req.user,"current user fetched successfully")  
@@ -288,10 +289,17 @@ const updateUserAvatar = asyncHandler(async(req,res)=>{
     }
 
    const avatar =await uploadOnCloudinary(avatarLocalPath)
-
    if(!avatar.url)
    {
     throw new ApiError(400,"error while Uploading the avatar")
+   }
+
+   const publicId = req.user?.avatar.split('/').pop().replace(/\.[^/.]+$/, '');
+   const deleted = await deleteFromCloudinary(publicId)
+
+   if(!deleted)
+   {
+    throw new ApiError(400,"Error while deleting") 
    }
 
    const user = await  User.findByIdAndUpdate(
@@ -320,12 +328,20 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
     {
         throw new ApiError(400,"cover Image file is missing")
     }
-
+    const publicId = req.user?.coverImage.split('/').pop().replace(/\.[^/.]+$/, '');
+    // console.log('Public ID:', publicId);
    const coverImage =await uploadOnCloudinary(coverImageLocalPath)
 
    if(!coverImage.url)
    {
     throw new ApiError(400,"error while Uploading the cover image")
+   }
+   
+   const deleted = await deleteFromCloudinary(publicId)
+
+   if(!deleted)
+   {
+    throw new ApiError(400,"Error while deleting") 
    }
 
   const user = await User.findByIdAndUpdate(
@@ -409,9 +425,9 @@ const getUserChannelProfile = asyncHandler(async(req,res)=>{
     }
   ])
 
-  if(!channel?.length())
+  if(!channel?.length)
   {
-    throw new ApiError(404,"Channel Doesnot exist")
+    throw new ApiError(404,"Channel Does not exist")
   }
 
   return res.status(200)
