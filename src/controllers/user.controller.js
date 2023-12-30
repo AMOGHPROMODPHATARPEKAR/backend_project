@@ -88,7 +88,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const createdUser = await User.findById(user._id).select("-password -refreshToken")
 
     if (!createdUser) {
-        throw new ApiError(500, "Something went wrong while reistering user")
+        throw new ApiError(500, "Something went wrong while registering user")
     }
 
     //return res
@@ -295,6 +295,7 @@ const updateUserAvatar = asyncHandler(async(req,res)=>{
    }
 
    const publicId = req.user?.avatar.split('/').pop().replace(/\.[^/.]+$/, '');
+
    const deleted = await deleteFromCloudinary(publicId)
 
    if(!deleted)
@@ -329,7 +330,7 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
         throw new ApiError(400,"cover Image file is missing")
     }
     const publicId = req.user?.coverImage.split('/').pop().replace(/\.[^/.]+$/, '');
-    // console.log('Public ID:', publicId);
+
    const coverImage =await uploadOnCloudinary(coverImageLocalPath)
 
    if(!coverImage.url)

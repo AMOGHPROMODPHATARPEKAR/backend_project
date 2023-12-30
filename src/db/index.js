@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
-
+import { Video } from "../models/video.models.js";
 const connectDB = async ()=>{
+
+    
     try{
-    const connectionIn = await mongoose.connect(`${process.env.MANGODB_URL}/${DB_NAME}`)
-    console.log(`\n MAngo DB connected db host:${connectionIn.connection.host}`);
+        const connectionIn = await mongoose.connect(`${process.env.MANGODB_URL}/${DB_NAME}`)
+        console.log(`\n MAngo DB connected db host:${connectionIn.connection.host}`);
     }catch(error)
     {
         console.log("COnnection failed ",error);
@@ -12,4 +14,23 @@ const connectDB = async ()=>{
     }
 }
 
+const deleteVideoById = async (videoId) =>{
+
+    try {
+
+     const result = await Video.deleteOne({ _id: videoId })
+  if (result) {
+      console.log('Video deleted successfully');
+      return result
+} else {
+    return null;
+}
+}catch(error)
+{
+        console.log('Error deleting video',error.message);
+        return null;
+    } 
+  }
+
 export default connectDB;
+export {deleteVideoById}
