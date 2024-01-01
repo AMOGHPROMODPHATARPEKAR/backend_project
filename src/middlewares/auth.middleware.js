@@ -28,3 +28,19 @@ import jwt from "jsonwebtoken";
     throw new ApiError(401,"Invalid Access token")
    }
  })
+
+ export const fetchVideoFromDatabase = async (req, res, next) => {
+  try {
+    // Fetch video from the database using req.params.id or any other method
+    const video = await Video.findById(req.params.num);
+
+    // Set the video object in req.video
+    req.video = video;
+
+    // Continue to the next middleware or route handler
+    next();
+  } catch (error) {
+    console.error('Error fetching video:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}

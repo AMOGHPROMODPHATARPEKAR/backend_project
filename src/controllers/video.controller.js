@@ -123,8 +123,8 @@ const getVideo = asyncHandler(async (req,res) =>{
 const updateVideoDetails = asyncHandler(async (req,res) =>{
 
     const {title,description} = req.body;
- 
-    if(!title || !description)
+    
+    if(!title && !description)
     {
         throw new ApiError(400,"Any one field is required")
     }
@@ -155,9 +155,57 @@ const updateVideoDetails = asyncHandler(async (req,res) =>{
 
 })
 
+const updateVideo =asyncHandler(async (req,res) =>{
+    const {num} = req.params
 
+    
+console.log(req.video)
+    const videoLocal = req.files?.path;
+    console.log(videoLocal)
+    if(!videoLocal)
+    {
+        throw new ApiError(400,"Video is Required")
+    }
+
+    const video = await Video.findById(num)
+    if(!video)
+    {
+        throw new ApiError(401,"Original Video not available")
+    }
+
+    const videoFile = await uploadOnCloudinary(videoLocal)
+
+    if(!videoFile)
+    {
+        throw new ApiError(500,"Error while uploading on Cloudinary")
+    }
+
+    const publicId = video?.videoFile.split('/').pop().replace(/\.[^/.]+$/, '');
+
+    if(!publicId)
+    {
+        throw new ApiError(400,"Public id not found")
+    }
+    const deleted = await deleteFromCloudinary(publicId)
+
+   if(!deleted)
+   {
+    throw new ApiError(400,"Error while deleting") 
+   } 
+
+   video?.$set({
+    videoFile:videoFile.url
+   })
+
+   return res.status(200)
+   .json(
+    new ApiResponse(200,video,"Video Updated Successfully")
+   )
+
+})
 
 export {uploadVideo}
 export {deleteVideo}
 export {getVideo}
 export {updateVideoDetails}
+export {updateVideo}

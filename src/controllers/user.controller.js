@@ -282,7 +282,7 @@ if(!user)
 const updateUserAvatar = asyncHandler(async(req,res)=>{
 
     const avatarLocalPath = req.file?.path
-
+   console.log(req.file)
     if(!avatarLocalPath)
     {
         throw new ApiError(400,"Avatar file is missing")
@@ -314,6 +314,10 @@ const updateUserAvatar = asyncHandler(async(req,res)=>{
         new:true
     }
    )
+   if(!user)
+   {
+    throw new ApiError(500,"User Not found")
+   }
    return res.status(200)
    .json(
     new ApiResponse(200,user,"Avatar updated succesfull")
