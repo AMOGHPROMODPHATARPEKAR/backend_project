@@ -120,6 +120,44 @@ const getVideo = asyncHandler(async (req,res) =>{
 
 })
 
+const updateVideoDetails = asyncHandler(async (req,res) =>{
+
+    const {title,description} = req.body;
+ 
+    if(!title || !description)
+    {
+        throw new ApiError(400,"Any one field is required")
+    }
+    const {num} = req.params
+
+    const video = await Video.findByIdAndUpdate(
+        num,
+        {
+            $set:{
+                title:title,
+                description:description
+            }
+        },
+        {
+            new:true
+        }
+    ).select("-isPublish")
+
+    if(!video)
+    {
+        throw new ApiError(500,"Unable to fetch the video deatils")
+    }
+
+    return res.status(200)
+        .json(
+            new ApiResponse(200,video,"Account details updated")
+        )
+
+})
+
+
+
 export {uploadVideo}
 export {deleteVideo}
 export {getVideo}
+export {updateVideoDetails}
