@@ -4,6 +4,7 @@ import { Video } from "../models/video.models.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/Apiresponse.js";
 import { deleteVideoById } from "../db/index.js";
+import { User } from "../models/user.models.js";
 
 const uploadVideo = asyncHandler( async (req,res)=>{
    const {title,description} = req.body;
@@ -195,13 +196,26 @@ const updateVideo =asyncHandler(async (req,res) =>{
     throw new ApiError(400,"Error while deleting") 
    } 
 
-   video?.$set({
+   const updated = await Video.findByIdAndUpdate(
+    num,{
+   
+   $set:{
     videoFile:videoFile.url
-   })
+   }
+  },
+   {
+    new:true
+   }
+   )
+
+   if(!updated)
+   {
+    throw new ApiError(400,"unable to update")
+   }
 
    return res.status(200)
    .json(
-    new ApiResponse(200,video,"Video Updated Successfully")
+    new ApiResponse(200,updated,"Video Updated Successfully")
    )
 
 })
@@ -244,15 +258,74 @@ const updateThumbnail = asyncHandler(async (req,res) =>{
     throw new ApiError(400,"Error while deleting") 
    } 
 
-   video?.$set({
+   const updated = await Video.findByIdAndUpdate(
+    num,{
+   
+   $set:{
     thumbnail:thumbnail.url
-   })
+   }
+  },
+   {
+    new:true
+   }
+   )
+
+   if(!updated)
+   {
+    throw new ApiError(400,"unable to update")
+   }
 
    return res.status(200)
    .json(
-    new ApiResponse(200,video,"Thumbnail Updated Successfully")
+    new ApiResponse(200,updated,"Thumbnail Updated Successfully")
    )
 })
+
+const addWatchHistory = asyncHandler(async (req,res) =>{
+
+    const {num} = req.params;
+
+    const video = await Video.findById(num)
+    if(!video)
+    {
+        throw new ApiError(500,"Video Not Found")
+    }
+    
+    const watchHistory = req.user?.watchHistory;
+    if(watchHistory)
+    {
+        watchHistory.unshift(video);
+    }
+    else
+    {
+        console.log("watch history ")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                watchHistory:watchHistory
+            }
+        },
+        {
+            new:true
+        }
+        );
+
+    if(!user)
+    {
+        throw new ApiError(400,"User Not Found")
+    }
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200,user,"Added watch history successfully ")
+    )
+
+
+})
+
 
 export {uploadVideo}
 export {deleteVideo}
@@ -260,3 +333,4 @@ export {getVideo}
 export {updateVideoDetails}
 export {updateVideo}
 export {updateThumbnail}
+export {addWatchHistory}
