@@ -15,9 +15,11 @@ const uploadVideo = asyncHandler( async (req,res)=>{
 ) {
     throw new ApiError(404, "All fields are required")
 }
+    console.log("REQ:",req)
 
     const videoLocal = req.files?.videoFile[0]?.path;
-
+    console.log(req.files)
+    console.log(req.body)
     if(!videoLocal)
     {
         throw new ApiError(400, "Video File is required")
@@ -156,12 +158,12 @@ const updateVideoDetails = asyncHandler(async (req,res) =>{
 })
 
 const updateVideo =asyncHandler(async (req,res) =>{
-    const {num} = req.params
-
     
-console.log(req.video)
-    const videoLocal = req.files?.path;
-    console.log(videoLocal)
+    const {num} = req.params;
+
+
+    const videoLocal = req.file?.path;
+    
     if(!videoLocal)
     {
         throw new ApiError(400,"Video is Required")
@@ -186,7 +188,7 @@ console.log(req.video)
     {
         throw new ApiError(400,"Public id not found")
     }
-    const deleted = await deleteFromCloudinary(publicId)
+    const deleted = await deleteFromCloudinary(publicId,"video")
 
    if(!deleted)
    {
@@ -204,8 +206,57 @@ console.log(req.video)
 
 })
 
+const updateThumbnail = asyncHandler(async (req,res) =>{
+    
+    const {num} = req.params;
+
+
+    const thumbnailLocalLocal = req.file?.path;
+
+    if(!thumbnailLocalLocal)
+    {
+        throw new ApiError(400,"THumbnail is Required")
+    }
+
+    const video = await Video.findById(num)
+    if(!video)
+    {
+        throw new ApiError(401,"Original Video not available")
+    }
+
+    const thumbnail = await uploadOnCloudinary(thumbnailLocalLocal)
+
+    if(!thumbnail)
+    {
+        throw new ApiError(500,"Error while uploading on Cloudinary")
+    }
+
+    const publicId = video?.thumbnail.split('/').pop().replace(/\.[^/.]+$/, '');
+
+    if(!publicId)
+    {
+        throw new ApiError(400,"Public id not found")
+    }
+    const deleted = await deleteFromCloudinary(publicId)
+
+   if(!deleted)
+   {
+    throw new ApiError(400,"Error while deleting") 
+   } 
+
+   video?.$set({
+    thumbnail:thumbnail.url
+   })
+
+   return res.status(200)
+   .json(
+    new ApiResponse(200,video,"Thumbnail Updated Successfully")
+   )
+})
+
 export {uploadVideo}
 export {deleteVideo}
 export {getVideo}
 export {updateVideoDetails}
 export {updateVideo}
+export {updateThumbnail}
