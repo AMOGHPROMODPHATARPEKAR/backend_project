@@ -291,19 +291,12 @@ const addWatchHistory = asyncHandler(async (req,res) =>{
         throw new ApiError(500,"Video Not Found")
     }
     
-    const watchHistory = req.user?.watchHistory;
-    const foundItem = watchHistory?.find(obj => obj._id.equals(num));
+    let watchHistory = req.user?.watchHistory;
+     
 
-    
-    if(foundItem)
-    {
-        return res.status(201)
-        .json(
-            new ApiResponse(200,req.user,"Video already in watchHistory")
-        )
-    }
     if(watchHistory)
     {
+        watchHistory = watchHistory?.filter(obj => !obj._id.equals(num));
         watchHistory.unshift(video);
     }
     else
