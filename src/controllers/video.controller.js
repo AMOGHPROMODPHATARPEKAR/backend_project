@@ -292,13 +292,23 @@ const addWatchHistory = asyncHandler(async (req,res) =>{
     }
     
     const watchHistory = req.user?.watchHistory;
+    const foundItem = watchHistory?.find(obj => obj._id.equals(num));
+
+    
+    if(foundItem)
+    {
+        return res.status(201)
+        .json(
+            new ApiResponse(200,req.user,"Video already in watchHistory")
+        )
+    }
     if(watchHistory)
     {
         watchHistory.unshift(video);
     }
     else
     {
-        console.log("watch history ")
+        throw new ApiError(400,"Watch history Not found")
     }
 
     const user = await User.findByIdAndUpdate(
@@ -326,6 +336,46 @@ const addWatchHistory = asyncHandler(async (req,res) =>{
 
 })
 
+const deleteWatchHistory = asyncHandler(async(req,res)=>{
+    const {num} = req.params;
+
+    const video = await Video.findById(num)
+    if(!video)
+    {
+        throw new ApiError(500,"Video Not Found")
+    }
+    
+    let watchHistory = req.user?.watchHistory;
+    if(watchHistory){
+    watchHistory = watchHistory?.filter(obj => !obj._id.equals(num));
+    }else
+    {
+        throw new ApiError(400,"Watch history Not found")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set:{
+                watchHistory:watchHistory
+            }
+        },
+        {
+            new:true
+        }
+        );
+
+    if(!user)
+    {
+        throw new ApiError(400,"User Not Found")
+    }
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200,user,"Added watch history successfully ")
+    )
+
+})
 
 export {uploadVideo}
 export {deleteVideo}
@@ -334,3 +384,4 @@ export {updateVideoDetails}
 export {updateVideo}
 export {updateThumbnail}
 export {addWatchHistory}
+export {deleteWatchHistory}
