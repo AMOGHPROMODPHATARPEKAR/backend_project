@@ -1,3 +1,4 @@
+import { deleteSubscriberById } from "../db/index.js";
 import { Subscription } from "../models/subscription.models.js";
 import { User } from "../models/user.models.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -115,6 +116,25 @@ const getChannelInfo = asyncHandler(async(req,res)=>{
     )
 })
 
+const unsubscribe =  asyncHandler(async(req,res)=>{
+
+    const {num} = req.params
+
+    const deleted = await deleteSubscriberById(num)
+
+    if(!deleted)
+    {
+        throw new ApiError(500,"Error while deleting")
+    }
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200,{},"Subscription deleted successfully")
+    )
+
+})
+
 export {subcribe}
 export {getSubcriberInfo}
 export {getChannelInfo}
+export {unsubscribe}
