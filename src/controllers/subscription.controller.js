@@ -134,7 +134,21 @@ const unsubscribe =  asyncHandler(async(req,res)=>{
 
 })
 
+const totalSubscriber = asyncHandler(async(req,res)=>{
+
+    const {channelId} = req.params
+
+    const count = await Subscription.countDocuments({channel:channelId})
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200,count,`total Subcriber to your channel is ${count}`)
+    )
+
+})
+
 export {subcribe}
 export {getSubcriberInfo}
 export {getChannelInfo}
 export {unsubscribe}
+export {totalSubscriber}
