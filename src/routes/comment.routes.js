@@ -8,4 +8,5 @@ router.route("/addComment/:videoId").post(verifyJWT,addComment)
 router.route("/delete/:commentId").post(verifyJWT,deleteComment)
 router.route("/total/:videoId").get(totalComment)
 
+
 export default router

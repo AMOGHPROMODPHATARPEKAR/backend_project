@@ -21,6 +21,20 @@ const subcribe = asyncHandler(async(req,res)=>{
         {
             throw new ApiError(400,"Subcriber cannot subscibe himself")
         }
+        const already = await Subscription.findOne(
+            {
+                $and:[
+                {channel:channelId},
+                {subscriber:subscriberId}
+                ]
+            }
+        )
+        console.log("ala",already)
+        if(already)
+        {
+            throw new ApiError(400,"Already subscriped")
+        }
+
         const subscriber = await User.findById(subscriberId);
         if(!subscriber)
         {
@@ -147,8 +161,28 @@ const totalSubscriber = asyncHandler(async(req,res)=>{
 
 })
 
+const getSubscribedChannels = asyncHandler(async(req,res)=>{
+    const {subscriberId} = req.params
+
+    const channelList = await Subscription.find(
+        {subscriber:subscriberId},
+        {channel:1,_id:0}
+    )
+    console.log(channelList)
+        if(!channelList)
+        {
+            throw new ApiError(500,"Server error")
+        }
+
+        return res.status(200)
+        .json(
+            new ApiResponse(200,channelList,"subscriber list fetched")
+        )
+})
+
 export {subcribe}
 export {getSubcriberInfo}
 export {getChannelInfo}
 export {unsubscribe}
 export {totalSubscriber}
+export {getSubscribedChannels}
