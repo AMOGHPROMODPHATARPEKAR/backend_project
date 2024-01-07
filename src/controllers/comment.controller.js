@@ -77,15 +77,46 @@ const deleteComment = asyncHandler(async(req,res)=>{
 const totalComment = asyncHandler(async(req,res)=>{
 
     const {videoId} = req.params
+    const {limit = 10} = req.query
 
-    const count = await Comment.countDocuments({video:videoId})
+    const comments = await Comment.find(
+        {video:videoId},
+        {content:1,_id:0}
+        ).limit(limit)
+        console.log(comments)
+       if(!comments)
+       {
+        throw new ApiError(500,"Server error or no comments")
+       } 
+    return res.status(200)
+    .json(
+        new ApiResponse(200,comments,"total comments fetched successfully")
+    )
+})
+
+const updateComment = asyncHandler(async(req,res)=>{
+    const {commentId} = req.params
+    const {content} = req.body
+
+    const updated = await Comment.updateOne(
+        {_id:commentId},
+        {
+            $set:{content:content}
+        }
+    )
+    if(!updated)
+    {
+        throw new ApiError(500,"Comment Not Found")
+    }
 
     return res.status(200)
     .json(
-        new ApiResponse(200,count,"Counted successfully")
+        new ApiResponse(200,updated,"Comment Updated!")
     )
+
 })
 
 export {addComment}
 export {deleteComment}
 export {totalComment}
+export {updateComment}
