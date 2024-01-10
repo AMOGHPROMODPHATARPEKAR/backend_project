@@ -370,6 +370,11 @@ const deleteWatchHistory = asyncHandler(async(req,res)=>{
 
 })
 
+const getAllVideos = asyncHandler(async(req,res)=>{
+    const { limit = 10, sortBy, sortType, userId } = req.query
+})
+
+
 export {uploadVideo}
 export {deleteVideo}
 export {getVideo}
