@@ -5,6 +5,7 @@ import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js
 import { ApiResponse } from "../utils/Apiresponse.js";
 import { deleteVideoById } from "../db/index.js";
 import { User } from "../models/user.models.js";
+import mongoose from "mongoose";
 
 const uploadVideo = asyncHandler( async (req,res)=>{
    const {title,description} = req.body;
@@ -48,6 +49,7 @@ const uploadVideo = asyncHandler( async (req,res)=>{
         thumbnail:thumbnail.url,
         title,
         description,
+        owner:req.user._id,
         duration:videoFile.duration
     })
 
@@ -371,7 +373,61 @@ const deleteWatchHistory = asyncHandler(async(req,res)=>{
 })
 
 const getAllVideos = asyncHandler(async(req,res)=>{
-    const { limit = 10, sortBy, sortType, userId } = req.query
+    const { limit = 10,page=1, sortBy='createdAt', sortType, userId } = req.query;
+
+    // Define the initial match stage based on userId, if provided
+    const matchStage = userId ? { $match: { owner: new mongoose.Types.ObjectId(userId) } } : {};
+
+    // Define the sort stage based on sortBy and sortType
+    const sortStage = sortBy ? { $sort: { [sortBy]: sortType === 'desc' ? -1 : 1 } } : {};
+
+    try {
+        const videos = await Video.aggregate([
+            matchStage,
+            sortStage,
+            // Add more pipeline stages as needed
+            { $limit: parseInt(limit) },
+            {$skip:(page - 1) * parseInt(limit)},
+            {
+                $lookup:{
+                    from:"users",
+                    localField:"owner",
+                    foreignField:"_id",
+                    as:"owner",
+                    pipeline:[
+                        {
+                            $project:{
+                                fullname:1,
+                                username:1,
+                                avatar:1
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $addFields:{
+                    owner:{
+                        $first:"$owner"
+                    }
+                }
+            }
+        ]);
+
+        if(!videos)
+        {
+            throw new ApiError(500,"Error video:: Videos")
+        }
+
+        return res.status(200)
+        .json(
+            new ApiResponse(200,videos,"sucees")
+        )
+        
+    } catch (error) {
+        console.error('Error retrieving videos:', error);
+        throw new ApiError(500,"Error video:: Videos")
+    }
 })
 
 
@@ -383,3 +439,4 @@ export {updateVideo}
 export {updateThumbnail}
 export {addWatchHistory}
 export {deleteWatchHistory}
+export {getAllVideos}
