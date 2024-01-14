@@ -34,25 +34,6 @@ const deleteVideoById = async (videoId) =>{
     } 
   }
 
-  const deleteSubscriberById = async (subcriptionId) =>{
-
-    try {
-
-     const result = await Subscription.deleteOne({ _id: subcriptionId })
-  if (result?.deletedCount == 1) {
-      console.log('Subscription deleted successfully');
-    //   console.log(result)
-      return result
-} else {
-    return null;
-}
-}catch(error)
-{
-        console.log('Error deleting ',error.message);
-        return null;
-    } 
-  }
 
 export default connectDB;
 export {deleteVideoById}
-export {deleteSubscriberById}

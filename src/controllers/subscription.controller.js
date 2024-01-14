@@ -1,10 +1,9 @@
-import { deleteSubscriberById } from "../db/index.js";
 import { Subscription } from "../models/subscription.models.js";
 import { User } from "../models/user.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/Apiresponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-
+import mongoose from "mongoose";
 
 const subcribe = asyncHandler(async(req,res)=>{
         const {channelId} = req.body;
@@ -21,7 +20,7 @@ const subcribe = asyncHandler(async(req,res)=>{
         {
             throw new ApiError(400,"Subcriber cannot subscibe himself")
         }
-        const already = await Subscription.findOne(
+        const already = await Subscription.findOneAndDelete(
             {
                 $and:[
                 {channel:channelId},
@@ -29,19 +28,22 @@ const subcribe = asyncHandler(async(req,res)=>{
                 ]
             }
         )
-        console.log("ala",already)
+        
         if(already)
         {
-            throw new ApiError(400,"Already subscriped")
+            return res.status(200)
+            .json(
+                new ApiResponse(200,already,"Channel Unsubcribed")
+            )
         }
 
-        const subscriber = await User.findById(subscriberId);
+        const subscriber = await User.findById(subscriberId).select("username fullname avatar"); //you can skip this
         if(!subscriber)
         {
             throw new ApiError(500,"Subcriber user not found")
         }
 
-        const channel = await User.findById(channelId);
+        const channel = await User.findById(channelId).select("username fullname avatar");//you can skip this
         if(!channel)
         {
             throw new ApiError(500,"Channel not found")
@@ -60,7 +62,7 @@ const subcribe = asyncHandler(async(req,res)=>{
 
         return res.status(200)
         .json(
-            new ApiResponse(200,subscription,"Subscription completed successful")
+            new ApiResponse(200,subscription,"Channel Subscribed Successfully")
         )
 
 })
@@ -130,24 +132,6 @@ const getChannelInfo = asyncHandler(async(req,res)=>{
     )
 })
 
-const unsubscribe =  asyncHandler(async(req,res)=>{
-
-    const {num} = req.params
-
-    const deleted = await deleteSubscriberById(num)
-
-    if(!deleted)
-    {
-        throw new ApiError(500,"Error while deleting")
-    }
-
-    return res.status(200)
-    .json(
-        new ApiResponse(200,{},"Subscription deleted successfully")
-    )
-
-})
-
 const totalSubscriber = asyncHandler(async(req,res)=>{
 
     const {channelId} = req.params
@@ -161,12 +145,82 @@ const totalSubscriber = asyncHandler(async(req,res)=>{
 
 })
 
+const getUserChannelSubscribers = asyncHandler(async (req, res) => {
+    const {channelId} = req.params
+
+
+    const subList = await Subscription.aggregate(
+        [
+            {
+                $match:{channel:new mongoose.Types.ObjectId(channelId)}
+            },
+            {
+                $lookup:{
+                    from:'users',
+                    localField:'subscriber',
+                    foreignField:'_id',
+                    as:'subsciber',
+                    pipeline:[
+                        {
+                            $project:{
+                                fullname:1,
+                                username:1,
+                                 avatar:1
+                            }
+                        }
+
+                    ]
+                }
+            },
+        ]
+    )
+
+    if(!subList)
+        {
+            throw new ApiError(500,"Server error")
+        }
+
+        return res.status(200)
+        .json(
+            new ApiResponse(200,subList,"subscriber list fetched")
+        )
+
+})
+
 const getSubscribedChannels = asyncHandler(async(req,res)=>{
     const {subscriberId} = req.params
 
-    const channelList = await Subscription.find(
-        {subscriber:subscriberId},
-        {channel:1,_id:0}
+    const channelList = await Subscription.aggregate(
+        [
+            {
+                $match:{subscriber:new mongoose.Types.ObjectId(subscriberId)}
+            },
+            {
+                $lookup:{
+                    from:'users',
+                    localField:'channel',
+                    foreignField:'_id',
+                    as:'channel',
+                    pipeline:[
+                        {
+                            $project:{
+                                fullname:1,
+                                username:1,
+                                 avatar:1
+                            }
+                        }
+
+                    ]
+                }
+            },
+            {
+                $addFields:{
+                    channel:{
+                        $first:"$channel"
+                    }
+                }
+            }
+        ]
     )
     console.log(channelList)
         if(!channelList)
@@ -176,13 +230,13 @@ const getSubscribedChannels = asyncHandler(async(req,res)=>{
 
         return res.status(200)
         .json(
-            new ApiResponse(200,channelList,"subscriber list fetched")
+            new ApiResponse(200,channelList,"Channel list fetched")
         )
 })
 
 export {subcribe}
 export {getSubcriberInfo}
 export {getChannelInfo}
-export {unsubscribe}
 export {totalSubscriber}
 export {getSubscribedChannels}
+export {getUserChannelSubscribers}
