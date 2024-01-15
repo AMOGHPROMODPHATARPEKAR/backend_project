@@ -6,6 +6,7 @@ import { ApiResponse } from "../utils/Apiresponse.js";
 import { deleteVideoById } from "../db/index.js";
 import { User } from "../models/user.models.js";
 import mongoose from "mongoose";
+import { json } from "express";
 
 const uploadVideo = asyncHandler( async (req,res)=>{
    const {title,description} = req.body;
@@ -430,6 +431,29 @@ const getAllVideos = asyncHandler(async(req,res)=>{
     }
 })
 
+const toggelPublishstatus = asyncHandler(async(req,res)=>{
+    const { videoId } = req.params
+
+    const updatedVideo = await Video.findOneAndUpdate(
+        {_id:videoId, owner:req.user._id },
+        {
+            isPublish:!((await Video.findById(videoId)).isPublish),
+        },
+        {
+            new:true
+        }
+    )
+    if(!updatedVideo)
+    {
+        throw new ApiError(500,"error :: Video :: toggelPublish :: Owner is not same or video Not found")
+    }
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200,updatedVideo,`Toggled Publish status successfully from ${!(updatedVideo.isPublish)} to ${updatedVideo.isPublish} `)
+    )
+
+})
 
 export {uploadVideo}
 export {deleteVideo}
@@ -440,3 +464,4 @@ export {updateThumbnail}
 export {addWatchHistory}
 export {deleteWatchHistory}
 export {getAllVideos}
+export {toggelPublishstatus}
