@@ -20,7 +20,7 @@ router.route("/videoUpload").post(
     ,uploadVideo)
 
     router.route("/deleteVideo/:num").post(verifyJWT,deleteVideo)
-    router.route("/get/:username").get(verifyJWT,getVideo)
+    router.route("/get/:username").get(getVideo)
     router.route("/updateDetails/:num").patch(verifyJWT,updateVideoDetails)
     router.route("/updateVideo/:num").patch(verifyJWT,upload.single("videoFile"),updateVideo)
     router.route("/updateThumbnail/:num").patch(verifyJWT,upload.single("thumbnail"),updateThumbnail)
