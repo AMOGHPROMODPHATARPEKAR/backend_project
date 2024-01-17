@@ -3,10 +3,12 @@ import React, {useId} from 'react'
 const Input = React.forwardRef( function Input({
     label,
     type = "text",
+    name ="",
     className = "",
     ...props
 }, ref){
     const id = useId()
+    // console.log(props)
     return (
         <div className='w-full'>
             {label && <label 
