@@ -113,7 +113,28 @@ const getVideo = asyncHandler(async (req,res) =>{
     const {username} = req.params
 
     console.log(username)
-    const video = await Video.findById(username);
+    const video = await Video.aggregate([
+        {
+            $match: {_id: new mongoose.Types.ObjectId(username)}
+        },
+        {
+            $lookup:{
+                from:"users",
+                localField:"owner",
+                foreignField:"_id",
+                as:"owner",
+                pipeline:[
+                    {
+                        $project:{
+                            fullname:1,
+                            username:1,
+                            avatar:1
+                        }
+                    }
+                ]
+            }
+        }
+    ])
     if(!video)
     {
         throw new ApiError(400,"Video not Found")
@@ -374,17 +395,16 @@ const deleteWatchHistory = asyncHandler(async(req,res)=>{
 })
 
 const getAllVideos = asyncHandler(async(req,res)=>{
-    const { limit = 10,page=1, sortBy='createdAt', sortType, userId } = req.query;
+    const { limit = 10,page=1, sortBy='createdAt', sortType='desc'} = req.query;
 
     // Define the initial match stage based on userId, if provided
-    const matchStage = userId ? { $match: { owner: new mongoose.Types.ObjectId(userId) } } : {};
+    // const matchStage = userId ? { $match: { owner: new mongoose.Types.ObjectId(userId) } } : {};
 
     // Define the sort stage based on sortBy and sortType
     const sortStage = sortBy ? { $sort: { [sortBy]: sortType === 'desc' ? -1 : 1 } } : {};
 
     try {
         const videos = await Video.aggregate([
-            matchStage,
             sortStage,
             // Add more pipeline stages as needed
             { $limit: parseInt(limit) },
@@ -412,8 +432,18 @@ const getAllVideos = asyncHandler(async(req,res)=>{
                         $first:"$owner"
                     }
                 }
+            },
+            {
+                $project:{
+                    id:1,
+                    videoFile:1,
+                    thumbnail:1,
+                    title:1,
+                    owner:1,
+                    description:1
+                }
             }
-        ]);
+        ])
 
         if(!videos)
         {

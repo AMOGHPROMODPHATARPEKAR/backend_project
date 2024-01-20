@@ -31,7 +31,7 @@ const subcribe = asyncHandler(async(req,res)=>{
         
         if(already)
         {
-            return res.status(200)
+            return res.status(201)
             .json(
                 new ApiResponse(200,already,"Channel Unsubcribed")
             )
@@ -234,9 +234,28 @@ const getSubscribedChannels = asyncHandler(async(req,res)=>{
         )
 })
 
+const subscribedNot = asyncHandler(async(req,res)=>{
+    const {channelId} = req.body
+    console.log("cc ",channelId)
+    console.log('user ',channelId)
+    const subcribed = await Subscription.findOne({subscriber:req.user._id, channel:channelId})
+    if(!subcribed)
+    {
+        return res.status(201)
+        .json(
+            new ApiResponse(201,[],"Not subscibed")
+        )
+    }
+    return res.status(200)
+            .json(
+                new ApiResponse(200,subcribed,"Subscribe info")
+            )
+})
+
 export {subcribe}
 export {getSubcriberInfo}
 export {getChannelInfo}
 export {totalSubscriber}
 export {getSubscribedChannels}
 export {getUserChannelSubscribers}
+export {subscribedNot}

@@ -7,7 +7,8 @@ import Footer from "./Footer/Footer";
 import Login from "./Login";
 import Button from "./Button";
 import Input from "./Input";
-
+import PostCard from "./PostCard";
+import Video from "./Video";
 export {
     Signup,
     Container,
@@ -17,6 +18,8 @@ export {
     Footer,
     Login,
     Button,
-    Input
+    Input,
+    PostCard,
+    Video
 
 }

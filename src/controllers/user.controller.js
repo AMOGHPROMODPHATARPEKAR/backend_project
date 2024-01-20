@@ -247,6 +247,7 @@ const getCurrentUser = asyncHandler(async(req,res)=>{
         )
 })
 
+
 const updateAccountDetails = asyncHandler(async(req,res)=>{
 
     const {fullname,email} = req.body
@@ -493,6 +494,8 @@ const getWatchHistory = asyncHandler(async(req,res)=>{
     )
 
 })
+
+
 
 export { registerUser }
 export { loginUser }
