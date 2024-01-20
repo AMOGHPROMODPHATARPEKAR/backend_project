@@ -236,8 +236,6 @@ const getSubscribedChannels = asyncHandler(async(req,res)=>{
 
 const subscribedNot = asyncHandler(async(req,res)=>{
     const {channelId} = req.body
-    console.log("cc ",channelId)
-    console.log('user ',channelId)
     const subcribed = await Subscription.findOne({subscriber:req.user._id, channel:channelId})
     if(!subcribed)
     {
