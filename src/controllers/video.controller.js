@@ -10,7 +10,6 @@ import { json } from "express";
 
 const uploadVideo = asyncHandler( async (req,res)=>{
    const {title,description} = req.body;
-
    if (
     [title, description].some((field) => {
         field?.trim() === ""
@@ -18,7 +17,7 @@ const uploadVideo = asyncHandler( async (req,res)=>{
 ) {
     throw new ApiError(404, "All fields are required")
 }
-    console.log("REQ:",req)
+    // console.log("REQ:",req)
 
     const videoLocal = req.files?.videoFile[0]?.path;
     console.log(req.files)

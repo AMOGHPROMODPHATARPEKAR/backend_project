@@ -5,7 +5,7 @@ import './index.css'
 import { Provider } from 'react-redux'
 import store from './store/store.js'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import {Login, Signup, Video} from './component/index.js'
+import {AddPost, Login, Signup, Video} from './component/index.js'
 import Home from './pages/Home.jsx'
 
 const router = createBrowserRouter(
@@ -28,6 +28,10 @@ const router = createBrowserRouter(
         {
           path:'/video/:id',
           element:<Video/>
+        },
+        {
+          path:'/add-post',
+          element:<AddPost/>
         }
         
       ]

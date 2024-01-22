@@ -30,7 +30,7 @@ const Video = () => {
 
   },[owner])
 
-  console.log(subscribed)
+  // console.log(subscribed)
   const subscribe = async() =>{
     const channelId = owner._id;
     const subscribe = await axios.post('/api/v1/subcription/toggleSubsciption',{channelId});

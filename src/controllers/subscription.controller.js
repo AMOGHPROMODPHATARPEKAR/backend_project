@@ -16,10 +16,10 @@ const subcribe = asyncHandler(async(req,res)=>{
         {
             throw new ApiError(400,"Subcriber Id is required")
         }
-        if(channelId == subscriberId)
-        {
-            throw new ApiError(400,"Subcriber cannot subscibe himself")
-        }
+        // if(channelId == subscriberId)
+        // {
+        //     throw new ApiError(400,"Subcriber cannot subscibe himself")
+        // }
         const already = await Subscription.findOneAndDelete(
             {
                 $and:[

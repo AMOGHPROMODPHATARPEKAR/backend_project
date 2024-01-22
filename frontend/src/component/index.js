@@ -9,6 +9,8 @@ import Button from "./Button";
 import Input from "./Input";
 import PostCard from "./PostCard";
 import Video from "./Video";
+import AddPost from "./AddPost";
+
 export {
     Signup,
     Container,
@@ -20,6 +22,7 @@ export {
     Button,
     Input,
     PostCard,
-    Video
+    Video,
+    AddPost
 
 }

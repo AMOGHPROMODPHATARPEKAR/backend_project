@@ -25,6 +25,7 @@ const Signup = () => {
 
       const handleChange = (e) => {
         const { name, value, files } = e.target;
+        console.log(formData)
         setFormData((prevData) => ({
           ...prevData,
           [name]: name === 'avatar' || name === "coverImage" ? files[0] : value,

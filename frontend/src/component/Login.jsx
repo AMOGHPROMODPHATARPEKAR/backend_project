@@ -26,9 +26,10 @@ const Login = () => {
         try {
             
             const userData = await axios.post('api/v1/users/login',form)
+            // console.log(userData.data?.data?.user)
             if(userData)
             {
-                console.log(userData.data?.data?.user)
+                // console.log(userData.data?.data?.user)
                 // const user = await axios.get('api/v1/users/getUser')
                 // console.log(user)
                 dispatch(authLogin(userData.data?.data?.user))
@@ -65,7 +66,7 @@ const Login = () => {
            
            <div>
             <label className=' w-full inline-block mb-1 py-1'>Email:</label>
-            <input  className=' w-full  rounded-lg focus:bg-gray-50 outline-none  mb-1 py-2' type='text' name='email' value={form.email} onChange={handleChange} />
+            <input  className=' w-full  rounded-lg focus:bg-gray-50 outline-none  mb-1 py-2' type='email' name='email' value={form.email} onChange={handleChange} />
            </div>
            <div>
             <label className=' w-full inline-block mb-1 py-1'>Password:</label>
