@@ -484,6 +484,32 @@ const toggelPublishstatus = asyncHandler(async(req,res)=>{
 
 })
 
+const addView = asyncHandler(async(req,res)=>{
+    const {id} = req.params
+
+    const video = await Video.findOneAndUpdate(
+        {
+            _id: id
+        },
+        {
+            $inc:{views:1}
+        },
+        {
+            new:true
+        }
+    )
+    if(!video)
+    {
+        throw new ApiError(400,"VIdeo not found")
+    }
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200,video,"Added a view")
+    )
+
+})
+
 export {uploadVideo}
 export {deleteVideo}
 export {getVideo}
@@ -494,3 +520,4 @@ export {addWatchHistory}
 export {deleteWatchHistory}
 export {getAllVideos}
 export {toggelPublishstatus}
+export {addView}

@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '../assets/yt.jpg'
+import logo from '../assets/logo.png'
 const Logo = ({width = '100px'}) => {
   return (
     <div className={`w-[${width}] text-red-800`}>

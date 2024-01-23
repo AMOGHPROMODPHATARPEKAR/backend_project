@@ -2,6 +2,7 @@ import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import Button from './Button'
+import {GrView} from "react-icons/gr"
 
 const Video = () => {
 
@@ -11,6 +12,14 @@ const Video = () => {
   const [subscribed,setSubscribed] = useState(false)
   console.log(id)
   useEffect(() => {
+
+    axios.patch(`/../api/v1/videos/addHistory/${id}`).then((item)=> console.log(item) )
+      .catch((err)=>console.log(err))
+
+      axios.patch(`/../api/v1/videos/addView/${id}`)
+      .then((item)=> console.log(item))
+      .catch((err)=>console.log(err))
+
     // axios.get(`api/v1/video/get/${param}`).then((item)=>setVideo(item))
     axios.get(`/api/v1/videos/get/${id}`).then((item) => {
       setVideo(item.data.data[0]),
@@ -18,6 +27,7 @@ const Video = () => {
     })
       .catch((err) => console.log(err))
 
+      
 
   }, [])
 
@@ -42,7 +52,7 @@ const Video = () => {
     <div className=' mx-auto flex flex-col justify-center items-center'>
       <div className=' mx-auto h-[500px] w-[500px]'>
         {video.videoFile && (
-          <video className=' w-full h-full' controls>
+          <video className=' w-full h-full' controls autoPlay>
             <source src={video.videoFile} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -55,12 +65,19 @@ const Video = () => {
         <div className=' mt-4'>
         <h1>{video.title}</h1>
         <p>{video.description}</p>
+        <div className=' flex justify-center mt-1 gap-2 '>
+
+        <GrView size={24} className=' text-gray-300'/> 
+        <p className=' px-2'>{video.views}</p>
+
+        </div>
         </div>
         <div onClick={subscribe}>
         <Button  subscribed={subscribed} bgColor='bg-red-600' className='ml-10 '>Subscriber</Button>
         </div>
       </div>
     </div>
+    
   )
 }
 
