@@ -8,6 +8,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import {AddPost, Login, Signup, Video} from './component/index.js'
 import Home from './pages/Home.jsx'
 import Profile from './pages/Profile.jsx'
+import ChannelProfile from './pages/ChannelProfile.jsx'
 
 const router = createBrowserRouter(
   [
@@ -37,8 +38,11 @@ const router = createBrowserRouter(
         {
           path:'/profile',
           element:<Profile/>
+        },
+        {
+          path:'/channel/:id',
+          element:<ChannelProfile/>
         }
-        
       ]
     }
   ]

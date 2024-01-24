@@ -394,16 +394,19 @@ const deleteWatchHistory = asyncHandler(async(req,res)=>{
 })
 
 const getAllVideos = asyncHandler(async(req,res)=>{
-    const { limit = 10,page=1, sortBy='createdAt', sortType='desc'} = req.query;
+    const { limit = 10,page=1, sortBy='createdAt', sortType='desc',userId} = req.query;
 
     // Define the initial match stage based on userId, if provided
-    // const matchStage = userId ? { $match: { owner: new mongoose.Types.ObjectId(userId) } } : {};
-
+    const matchStage = userId ? { owner: new mongoose.Types.ObjectId(userId) } : {};
+    console.log(matchStage)
     // Define the sort stage based on sortBy and sortType
     const sortStage = sortBy ? { $sort: { [sortBy]: sortType === 'desc' ? -1 : 1 } } : {};
 
     try {
         const videos = await Video.aggregate([
+            {
+                $match:matchStage
+            },
             sortStage,
             // Add more pipeline stages as needed
             { $limit: parseInt(limit) },

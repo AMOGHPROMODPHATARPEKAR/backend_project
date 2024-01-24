@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Button from './Button'
 import {GrView} from "react-icons/gr"
 import {AiFillLike} from 'react-icons/ai'
@@ -14,7 +14,9 @@ const Video = () => {
   const [like,setLike] = useState(0)
   const [liked,setLiked] = useState(false)
 
-  console.log(id)
+  const navigate = useNavigate()
+
+  // console.log(id)
   useEffect(() => {
 
     axios.patch(`/../api/v1/videos/addHistory/${id}`).then((item)=> console.log(item) )
@@ -89,7 +91,7 @@ const Video = () => {
 
         <div className=' flex my-3 gap-3 justify-center items-center'>
         <div className='p-2'>
-          <img src={owner.avatar} alt="owner" srcset="" className=' w-[50px] h-[50px] rounded-full' />
+          <img src={owner.avatar} alt="owner" srcset="" className=' w-[50px] h-[50px] rounded-full cursor-pointer' onClick={()=> navigate(`/channel/${owner._id}`)} />
         </div>
         <div onClick={subscribe} className=' p-2'>
         <Button  subscribed={subscribed} bgColor='bg-red-600' className=' p-2 hover:translate-y-[1px]'>Subscriber</Button>

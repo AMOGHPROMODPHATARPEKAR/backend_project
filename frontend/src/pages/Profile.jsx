@@ -25,7 +25,7 @@ const Profile = () => {
 
 
     return (
-        <div className=' w-[80vw]  mx-10 p-4 '>
+        <div className=' w-[90vw]  mx-5 p-4 '>
 
             <div className='w-full  overflow-hidden '>
                 <img src={userData.coverImage} alt="banner" className=' w-full block h-[200px] ' />

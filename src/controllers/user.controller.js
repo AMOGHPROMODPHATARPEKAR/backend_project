@@ -371,17 +371,13 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
 
 const getUserChannelProfile = asyncHandler(async(req,res)=>{
 
-    const {username} = req.params
+    const {id} = req.params
 
-    if(!username?.trim())
-    {
-        throw new ApiError(400,"Username is missing")
-    }
 
   const channel= await User.aggregate([
     {
         $match:{
-            username:username?.toLowerCase()
+            _id: new mongoose.Types.ObjectId(id)
         }
     },
     {
@@ -401,12 +397,23 @@ const getUserChannelProfile = asyncHandler(async(req,res)=>{
         }
     },
     {
+        $lookup:{
+            from:"videos",
+            localField:"_id",
+            foreignField:"owner",
+            as:"videosIn"
+        }
+    },
+    {
         $addFields:{
             subscribersCount:{
                 $size:"$subscribers"
             },
             channelsSubscribedToCount:{
                 $size:"$subscribedTo"
+            },
+            videosCount:{
+                $size:"$videosIn"
             },
             isSubscribed:{
                 $cond:{
@@ -423,6 +430,7 @@ const getUserChannelProfile = asyncHandler(async(req,res)=>{
             username:1,
             subscribersCount:1,
             channelsSubscribedToCount:1,
+            videosCount:1,
             isSubscribed:1,
             avatar:1,
             coverImage:1,
