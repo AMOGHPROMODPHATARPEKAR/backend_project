@@ -153,8 +153,51 @@ const getLikedVideos = asyncHandler(async(req,res)=>{
 
 })
 
+const videoLikes = asyncHandler(async(req,res)=>{
+    const {id} = req.params
+
+    const likes = await Like.countDocuments(
+        {
+            video:id
+        }
+    )
+
+    return res.status(200)
+    .json(
+        new ApiResponse(200,likes,"Total likes")
+    )
+})
+
+const videoliked = asyncHandler(async(req,res)=>{
+    const {id} = req.params
+
+    const liked = await Like.findOne(
+        {
+        video:id,
+        likedBy:req.user?._id
+        }
+    )
+    if(liked)
+    {
+        return res.status(200)
+        .json(
+            new ApiResponse(200,true,"User has liked")
+        )
+    }
+    else
+    {
+        return res.status(201)
+        .json(
+            new ApiResponse(201,false,"User has not liked")
+        )
+    }
+
+})
+
 export {toggleVideoLike,
     toggleCommentLike,
     toggleTweetLike,
-    getLikedVideos
+    getLikedVideos,
+    videoLikes,
+    videoliked
 }

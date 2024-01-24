@@ -7,6 +7,7 @@ import store from './store/store.js'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import {AddPost, Login, Signup, Video} from './component/index.js'
 import Home from './pages/Home.jsx'
+import Profile from './pages/Profile.jsx'
 
 const router = createBrowserRouter(
   [
@@ -32,6 +33,10 @@ const router = createBrowserRouter(
         {
           path:'/add-post',
           element:<AddPost/>
+        },
+        {
+          path:'/profile',
+          element:<Profile/>
         }
         
       ]

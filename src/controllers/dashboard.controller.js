@@ -34,7 +34,44 @@ const getChannelStats = asyncHandler(async (req, res) => {
 const getChannelVideos = asyncHandler(async (req, res) => {
     
     
-    const videos = await Video.find({owner:req.user._id})
+    const videos = await Video.aggregate([
+        {
+            $match:{owner:req.user._id}},
+        {
+            $lookup:{
+                from:"users",
+                localField:"owner",
+                foreignField:"_id",
+                as:"owner",
+                pipeline:[
+                    {
+                        $project:{
+                            fullname:1,
+                            username:1,
+                            avatar:1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields:{
+                owner:{
+                    $first:"$owner"
+                }
+            }
+        },
+        {
+            $project:{
+                id:1,
+                videoFile:1,
+                thumbnail:1,
+                title:1,
+                owner:1,
+                description:1
+            }
+        }
+        ])
 
     if(!videos)
     {

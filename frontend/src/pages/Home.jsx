@@ -25,7 +25,7 @@ const Home = () => {
         axios('api/v1/videos/getAllVideo').then((video)=> setPosts(video.data.data))
         .catch((error)=>console.log(error))
     },[])
-
+        // console.log(posts)
     if (!status) {
         return (
             <div className="w-full py-8 mt-4 text-center">
