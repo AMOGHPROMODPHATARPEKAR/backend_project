@@ -50,7 +50,7 @@ const Profile = () => {
                     <div className=' flex flex-wrap'>
                     {posts.map((post)=>(
                         <div key={post._id} className=' p-3 w-1/4'>
-                            <PostCard {...post}/>
+                            <PostCard {...post} edit ={true}/>
                         </div>
                     ))}
                     </div>

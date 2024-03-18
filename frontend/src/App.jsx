@@ -8,7 +8,6 @@ import { Footer, Header } from './component'
 function App() {
 
   
-
   return (
     <>
       <div className=' min-h-screen bg-gray-400 flex flex-wrap content-between'>

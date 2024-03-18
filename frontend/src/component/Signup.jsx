@@ -1,12 +1,9 @@
 import React ,{useState} from 'react'
-import { useForm } from 'react-hook-form'
-import Input from './Input'
 import Button from './Button'
 import axios from 'axios'
 import { NavLink,Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import { login } from '../store/authSlice'
 import Logo from './Logo'
 
 const Signup = () => {

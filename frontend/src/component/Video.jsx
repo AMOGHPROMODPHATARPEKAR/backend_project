@@ -4,6 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Button from './Button'
 import {GrView} from "react-icons/gr"
 import {AiFillLike} from 'react-icons/ai'
+import {BsArrowUpShort} from 'react-icons/bs'
+import {BsArrowDown} from 'react-icons/bs'
 
 const Video = () => {
 
@@ -13,7 +15,7 @@ const Video = () => {
   const [subscribed,setSubscribed] = useState(false)
   const [like,setLike] = useState(0)
   const [liked,setLiked] = useState(false)
-
+  const [isExpanded, setIsExpanded] = useState(false);
   const navigate = useNavigate()
 
   // console.log(id)
@@ -69,10 +71,10 @@ const Video = () => {
       setLiked((prev)=> !prev)
   }
 
-  // console.log(owner)
+  console.log(video)
   return (
     <div className=' mx-auto flex flex-col justify-center items-center'>
-      <div className=' mx-auto h-[500px] w-[500px]'>
+      <div className=' mx-auto h-[500px] w-[500px] border-gray-500 border-solid border-2 shadow-md shadow-red-700 my-5'>
         {video.videoFile && (
           <video className=' w-full h-full' controls autoPlay>
             <source src={video.videoFile} type="video/mp4" />
@@ -84,8 +86,8 @@ const Video = () => {
       <div className=' flex w-full justify-center items-center'>
         
         <div className=' mt-4'>
-        <h1>{video.title}</h1>
-        <p>{video.description}</p>
+        <h1 className=' text-2xl'>{video.title}</h1>
+        
         </div>
         </div>
 
@@ -103,11 +105,28 @@ const Video = () => {
         </div>
         </div>
 
-        <div className=' flex justify-start mt-1 gap-2 '>
-        Views:
-        <p className=' px-2'>{video.views}</p>
-        <GrView size={24} className=' text-gray-200'/> 
+        <div className='border border-gray-600 p-4 my-4'>
+      <div  className=" flex  justify-center items-center text-md w-[40vw] cursor-pointer" onClick={()=>setIsExpanded((prev)=>!prev)}>
+
+      {isExpanded ? "Less " : "More "} {isExpanded ?<BsArrowUpShort size={20} /> : <BsArrowDown/>} 
+
+      </div>
+      {isExpanded && (
+        <div className="xp-4 mt-2">
+          <div className=' flex justify-start mt-1 gap-2 '>
+          Views:
+          <p className=' px-2'>{video.views}</p>
+          <GrView size={24} className=' text-gray-200'/>
+          <p> {video.createdAt.substring(0, 10)}</p> 
+          </div>
+
+          <p className='flex justify-start mt-1'>Description: {video.description}</p>
+
         </div>
+      )}
+    </div>
+
+        
       
     </div>
     
