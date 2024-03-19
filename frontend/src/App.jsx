@@ -5,6 +5,7 @@ import './App.css'
 import { Outlet } from 'react-router-dom'
 import { Footer, Header } from './component'
 
+
 function App() {
 
   
@@ -13,6 +14,7 @@ function App() {
       <div className=' min-h-screen bg-gray-400 flex flex-wrap content-between'>
       <div className=' w-full block'>
       <Header/>
+      
       <main>
        <Outlet/>
       </main>

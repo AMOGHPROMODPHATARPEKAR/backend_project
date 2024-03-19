@@ -6,7 +6,7 @@ import {GrView} from "react-icons/gr"
 import {AiFillLike} from 'react-icons/ai'
 import {BsArrowUpShort} from 'react-icons/bs'
 import {BsArrowDown} from 'react-icons/bs'
-
+import Comment from './Comment'
 const Video = () => {
 
   const { id } = useParams()
@@ -71,7 +71,7 @@ const Video = () => {
       setLiked((prev)=> !prev)
   }
 
-  console.log(video)
+  // console.log(video)
   return (
     <div className=' mx-auto flex flex-col justify-center items-center'>
       <div className=' mx-auto h-[500px] w-[500px] border-gray-500 border-solid border-2 shadow-md shadow-red-700 my-5'>
@@ -105,7 +105,7 @@ const Video = () => {
         </div>
         </div>
 
-        <div className='border border-gray-600 p-4 my-4'>
+        <div className='border border-gray-600 p-2 my-4'>
       <div  className=" flex  justify-center items-center text-md w-[40vw] cursor-pointer" onClick={()=>setIsExpanded((prev)=>!prev)}>
 
       {isExpanded ? "Less " : "More "} {isExpanded ?<BsArrowUpShort size={20} /> : <BsArrowDown/>} 
@@ -126,7 +126,7 @@ const Video = () => {
       )}
     </div>
 
-        
+    <Comment id={id}/>    
       
     </div>
     

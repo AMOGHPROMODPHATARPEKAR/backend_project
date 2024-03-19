@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {Comment} from "../models/comments.models.js"
 import { ApiResponse } from "../utils/Apiresponse.js";
-
+import mongoose from "mongoose";
 
 const addComment = asyncHandler(async(req,res)=>{
 
@@ -77,12 +77,46 @@ const deleteComment = asyncHandler(async(req,res)=>{
 const totalComment = asyncHandler(async(req,res)=>{
 
     const {videoId} = req.params
-    const {limit = 10} = req.query
+    
 
-    const comments = await Comment.find(
-        {video:videoId},
-        {content:1,_id:0}
-        ).limit(limit)
+    const comments = await Comment.aggregate([
+        {
+            $match:{
+                video: new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        { $sort: { createdAt: -1 } },
+        {
+            $lookup:{
+                from:"users",
+                localField:"owner",
+                foreignField:"_id",
+                as:"owner",
+                pipeline:[
+                    {
+                        $project:{
+                            fullname:1,
+                            username:1,
+                            avatar:1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields:{
+                owner:{
+                    $first:"$owner"
+                }
+            }
+        },
+        {
+            $project:{
+                owner:1,
+                content:1,
+            }
+        }
+        ])
         console.log(comments)
        if(!comments)
        {

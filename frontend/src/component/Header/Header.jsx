@@ -34,6 +34,11 @@ const Header = () => {
       slug: "/add-post",
       active: authStatus,
   },
+  {
+      name: "Watch History",
+      slug: "/watch-history",
+      active: authStatus,
+  },
   ]
 
   return (

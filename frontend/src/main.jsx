@@ -10,6 +10,7 @@ import Home from './pages/Home.jsx'
 import Profile from './pages/Profile.jsx'
 import ChannelProfile from './pages/ChannelProfile.jsx'
 import Edit from './pages/Edit.jsx'
+import WatchHistory from './pages/WatchHistory.jsx'
 
 const router = createBrowserRouter(
   [
@@ -35,6 +36,10 @@ const router = createBrowserRouter(
         {
           path:'/add-post',
           element:<AddPost/>
+        },
+        {
+          path:'/watch-history',
+          element:<WatchHistory/>
         },
         {
           path:'/profile',

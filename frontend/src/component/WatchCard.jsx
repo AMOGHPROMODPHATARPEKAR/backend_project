@@ -1,20 +1,30 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import {BiEdit} from 'react-icons/bi'
-
-const PostCard = ({
+import {AiTwotoneDelete} from 'react-icons/ai'
+import axios from 'axios'
+ 
+const WatchCard = ({
     _id,
     title,
     thumbnail,
     description,
     owner,
-    edit=false,
 }) => {
 
-    const navigate = useNavigate()
+    const del = async()=>{
+        const response = await axios.patch(`/api/v1/videos/deleteHistory/${_id}`)
+        if(response)
+        {
+            console.log("Deleted successfully")
+        }
+        else
+        {
+            console.error("Error !!")
+        }
+    }
+
   return (
-        <div className='w-full bg-gray-100 rounded-xl p-4'>
+    <div className='w-full bg-gray-200 rounded-md p-4'>
             <div className='w-full justify-center mb-4 cursor-pointer' onClick={()=>navigate(`/video/${_id}`)}>
                 <img src={thumbnail} alt='thumbnail'
                 className='rounded-xl w-[200px] h-[200px] mx-auto' />
@@ -27,13 +37,9 @@ const PostCard = ({
             > {title}</h2>
             </div>
             </div>
-            {edit && (
-                <div className=' cursor-pointer   items-end ml-[100px] mt-3' onClick={()=> navigate(`/edit/${_id}`)}>
-                   <BiEdit size={30} fill='green'/>
-                </div>
-            )}
+            <AiTwotoneDelete fill='red' size={20} className=' relative  ml-auto cursor-pointer hover:translate-y-1 transition-transform duration-300 ease-in-out ' onClick={del}/>
         </div>
   )
 }
 
-export default PostCard
+export default WatchCard
