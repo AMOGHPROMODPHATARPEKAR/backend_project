@@ -11,6 +11,7 @@ import Profile from './pages/Profile.jsx'
 import ChannelProfile from './pages/ChannelProfile.jsx'
 import Edit from './pages/Edit.jsx'
 import WatchHistory from './pages/WatchHistory.jsx'
+import UpdateProfile from './component/UpdateProfile.jsx'
 
 const router = createBrowserRouter(
   [
@@ -43,7 +44,14 @@ const router = createBrowserRouter(
         },
         {
           path:'/profile',
-          element:<Profile/>
+          element:<Profile/>,
+          children: [
+            {
+              path: "/profile/update",
+              element: <UpdateProfile />,
+            },
+            
+          ],
         },
         {
           path:'/channel/:id',

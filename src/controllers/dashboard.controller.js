@@ -17,11 +17,14 @@ const getChannelStats = asyncHandler(async (req, res) => {
         video: { $in: await Video.find({ owner: req.user._id }).distinct('_id') }
         }
     )
+    
+    const subcribedTo = await Subscription.countDocuments({subscriber:req.user?._id})
 
     const stat = {
         totalSubscriber:totalSubscriber,
         totalLikes:totalLikes,
-        totalVideos:totalVideos
+        totalVideos:totalVideos,
+        subcribedTo:subcribedTo,
     }
 
     return res.status(200)
