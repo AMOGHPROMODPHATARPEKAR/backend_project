@@ -39,6 +39,11 @@ const Header = () => {
       slug: "/watch-history",
       active: authStatus,
   },
+  {
+      name: "Subscribed",
+      slug: "/subscribed",
+      active: authStatus,
+  },
   ]
 
   return (
@@ -51,7 +56,7 @@ const Header = () => {
 
               </Link>
           </div>
-          <ul className='flex ml-auto'>
+          <ul className='flex ml-auto '>
             {navItems.map((item) => 
             item.active ? (
               <li key={item.name}>

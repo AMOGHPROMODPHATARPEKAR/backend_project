@@ -12,6 +12,7 @@ import ChannelProfile from './pages/ChannelProfile.jsx'
 import Edit from './pages/Edit.jsx'
 import WatchHistory from './pages/WatchHistory.jsx'
 import UpdateProfile from './component/UpdateProfile.jsx'
+import Subscibed from './pages/Subscibed.jsx'
 
 const router = createBrowserRouter(
   [
@@ -60,6 +61,10 @@ const router = createBrowserRouter(
         {
           path:'/edit/:id',
           element:<Edit/>,
+        },
+        {
+          path:'/subscribed',
+          element:<Subscibed/>,
         },
       ]
     }
