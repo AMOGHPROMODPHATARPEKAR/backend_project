@@ -187,7 +187,7 @@ const updateVideo =asyncHandler(async (req,res) =>{
 
 
     const videoLocal = req.file?.path;
-    
+    console.log("videolocal in server",videoLocal)
     if(!videoLocal)
     {
         throw new ApiError(400,"Video is Required")
@@ -397,7 +397,7 @@ const getAllVideos = asyncHandler(async(req,res)=>{
     const { limit = 10,page=1, sortBy='createdAt', sortType='desc',userId} = req.query;
 
     // Define the initial match stage based on userId, if provided
-    const matchStage = userId ? { owner: new mongoose.Types.ObjectId(userId) } : {};
+    const matchStage = userId ? { owner: new mongoose.Types.ObjectId(userId) } : {isPublish:true};
     console.log(matchStage)
     // Define the sort stage based on sortBy and sortType
     const sortStage = sortBy ? { $sort: { [sortBy]: sortType === 'desc' ? -1 : 1 } } : {};

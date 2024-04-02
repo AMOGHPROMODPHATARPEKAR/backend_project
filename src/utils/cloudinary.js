@@ -10,6 +10,7 @@ cloudinary.config({
 
 const uploadOnCloudinary = async (localFilePath) =>{
     try{
+        console.log("local cloudd",localFilePath)
         if(!localFilePath) 
         return null
         //upload file on cloudinary
